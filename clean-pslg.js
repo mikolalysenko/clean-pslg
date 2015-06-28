@@ -199,24 +199,17 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
   //Call find on each point to get a relabeling
   var ptr = 0
   var noDupes = true
+  var labels = new Array(numPoints)
   for(var i=0; i<numPoints; ++i) {
     var j = uf.find(i)
     if(j === i) {
       //If not a duplicate, then don't bother
+      labels[i] = ptr
       floatPoints[ptr++] = floatPoints[i]
     } else {
       //Clear no-dupes flag
       noDupes = false
-
-      //If order is not consistent, then swap in tree
-      if(i < j) {
-        var rankI = uf.ranks[i]
-        var rankJ = uf.ranks[j]
-        uf.ranks[i] = rankJ
-        uf.ranks[j] = rankI
-        uf.roots[j] = uf.roots[i] = i
-        floatPoints[ptr++] = floatPoints[i]
-      }
+      labels[i] = -1
     }
   }
   floatPoints.length = ptr
@@ -226,8 +219,15 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
     return null
   }
 
+  //Fix up missing labels
+  for(var i=0; i<numPoints; ++i) {
+    if(labels[i] < 0) {
+      labels[i] = labels[uf.find(i)]
+    }
+  }
+
   //Return resulting union-find data structure
-  return uf.roots
+  return labels
 }
 
 //Remove duplicate edge labels
