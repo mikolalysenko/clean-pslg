@@ -10,19 +10,18 @@ var rat = require('big-rat')
 var ratCmp = require('big-rat/cmp')
 var ratToFloat = require('big-rat/to-float')
 var ratVec = require('rat-vec')
+var nextafter = require('nextafter')
 
-var round = require('./lib/rounding')
 var solveIntersection = require('./lib/rat-seg-intersect')
 
 //Bounds on a rational number when rounded to a float
-//TODO: Use nextafter here
 function boundRat(r) {
   var f = ratToFloat(r)
   var cmp = ratCmp(rat(f), r)
   if(cmp < 0) {
-    return [f, round.up(f)]
+    return [f, nextafter(f, Infinity)]
   } else if(cmp > 0) {
-    return [round.down(f), f]
+    return [nextafter(f, -Infinity), f]
   } else {
     return [f, f]
   }

@@ -1,6 +1,6 @@
 {
   "name": "clean-pslg",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Remove self intersections, t-junctions and duplicate edges/vertices from a planar straight line graph",
   "main": "clean-pslg.js",
   "directories": {
@@ -8,12 +8,13 @@
     "test": "test"
   },
   "dependencies": {
-    "compare-cell": "^1.0.0",
-    "robust-segment-intersect": "^1.0.1",
-    "union-find": "^1.0.2",
-    "rat-vec": "^1.1.0",
     "big-rat": "^1.0.1",
     "box-intersect": "^1.0.1",
+    "compare-cell": "^1.0.0",
+    "nextafter": "^1.0.0",
+    "rat-vec": "^1.1.0",
+    "robust-segment-intersect": "^1.0.1",
+    "union-find": "^1.0.2",
     "uniq": "^1.0.1"
   },
   "devDependencies": {
