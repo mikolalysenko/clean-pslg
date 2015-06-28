@@ -94,7 +94,7 @@ function getTJunctions(points, edges, edgeBounds, vertBounds) {
 
 
 //Cut edges along crossings/tjunctions
-function cutEdges(floatPoints, edges, crossings, junctions) {
+function cutEdges(floatPoints, edges, crossings, junctions, useColor) {
 
   //Convert crossings into tjunctions by constructing rational points
   var ratPoints = []
@@ -144,7 +144,6 @@ function cutEdges(floatPoints, edges, crossings, junctions) {
     var s = edge[0]
     var t = edge[1]
 
-
     //Check if edge is not lexicographically sorted
     var a = floatPoints[s]
     var b = floatPoints[t]
@@ -158,16 +157,30 @@ function cutEdges(floatPoints, edges, crossings, junctions) {
     edge[0] = s
     var last = edge[1] = junction[1]
 
+    //If we are grouping edges by color, remember to track data
+    var color
+    if(useColor) {
+      color = edge[2]
+    }
+
     //Split other edges
     while(i > 0 && junctions[i-1][0] === e) {
       var junction = junctions[--i]
       var next = junction[1]
-      edges.push([last, next])
+      if(useColor) {
+        edges.push([last, next, color])
+      } else {
+        edges.push([last, next])
+      }
       last = next
     }
 
     //Add final edge
-    edges.push([last, t])
+    if(useColor) {
+      edges.push([last, t, color])
+    } else {
+      edges.push([last, t])
+    }
   }
 
   //Return constructed rational points
@@ -228,10 +241,22 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
   return labels
 }
 
-function compareLex(a,b) { return (a[0]-b[0]) || (a[1]-b[1]) }
+function compareLex2(a,b) { return (a[0]-b[0]) || (a[1]-b[1]) }
+function compareLex3(a,b) {
+  var d = (a[0] - b[0]) || (a[1] - b[1])
+  if(d) {
+    return d
+  }
+  if(a[2] < b[2]) {
+    return -1
+  } else if(a[2] > b[2]) {
+    return 1
+  }
+  return 0
+}
 
 //Remove duplicate edge labels
-function dedupEdges(edges, labels) {
+function dedupEdges(edges, labels, useColor) {
   if(edges.length === 0) {
     return
   }
@@ -252,12 +277,17 @@ function dedupEdges(edges, labels) {
       e[1] = Math.max(a, b)
     }
   }
-  edges.sort(compareLex)
+  if(useColor) {
+    edges.sort(compareLex3)
+  } else {
+    edges.sort(compareLex2)
+  }
   var ptr = 1
   for(var i=1; i<edges.length; ++i) {
     var prev = edges[i-1]
     var next = edges[i]
-    if(next[0] === prev[0] && next[1] === prev[1]) {
+    if(next[0] === prev[0] && next[1] === prev[1] &&
+      (!useColor || next[2] === prev[2])) {
       continue
     }
     edges[ptr++] = next
@@ -266,7 +296,7 @@ function dedupEdges(edges, labels) {
 }
 
 //Repeat until convergence
-function snapRound(points, edges) {
+function snapRound(points, edges, useColor) {
 
   // 1. find edge crossings
   var edgeBounds = boundEdges(points, edges)
@@ -277,13 +307,13 @@ function snapRound(points, edges) {
   var tjunctions = getTJunctions(points, edges, edgeBounds, vertBounds)
 
   // 3. cut edges, construct rational points
-  var ratPoints  = cutEdges(points, edges, crossings, tjunctions)
+  var ratPoints  = cutEdges(points, edges, crossings, tjunctions, useColor)
 
   // 4. dedupe verts
   var labels     = dedupPoints(points, ratPoints, vertBounds)
 
   // 6. dedupe edges
-  dedupEdges(edges, labels)
+  dedupEdges(edges, labels, useColor)
 
   // 5. check termination
   if(!labels) {
@@ -295,10 +325,34 @@ function snapRound(points, edges) {
 }
 
 //Main loop, runs PSLG clean up until completion
-function cleanPSLG(points, edges) {
-  var cleaned = false
-  while(snapRound(points, edges)) {
-    cleaned = true
+function cleanPSLG(points, edges, colors) {
+  var modified = false
+
+  //If using colors, augment edges with color data
+  var prevEdges
+  if(colors) {
+    prevEdges = edges
+    var augEdges = new Array(edges.length)
+    for(var i=0; i<edges.length; ++i) {
+      var e = edges[i]
+      augEdges[i] = [e[0], e[1], colors[i]]
+    }
+    edges = augEdges
   }
-  return cleaned
+
+  //Run snap rounding until convergence
+  while(snapRound(points, edges, !!colors)) {
+    modified = true
+  }
+
+  //Strip color tags
+  if(!!colors && modified) {
+    prevEdges.length = 0
+    for(var i=0; i<edges.length; ++i) {
+      var e = edges[i]
+      prevEdges.push([e[0], e[1]])
+    }
+  }
+
+  return modified
 }
