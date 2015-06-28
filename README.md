@@ -90,11 +90,12 @@ npm i clean-pslg
 
 # API
 
-#### `require('clean-pslg')(points, edges)`
+#### `require('clean-pslg')(points, edges[, colors])`
 Processes an unoriented planar straight line graph defined by `points` and `edges` in place.
 
 * `points` is an array encoding the vertices of the planar straight line graph as pairs of numbers
 * `edges` is an array encoding the edges of the planar straight line graph as pairs of indices
+* `colors` is an optional array of edge colors.  If specified, only merge edges if they have the same color.  This can be used to implement orientation preservation or handle solid geometry.
 
 The following degeneracies are handled:
 
