@@ -2,7 +2,7 @@ clean-pslg
 ============
 <img src="img/logo.png">
 
-Resolves all [self intersections](selfcross), [t-junctions](tjunc), and removes duplicate vertices/edges from a [planar straight line graph](pslg) using [iterated snap rounding](snap round).
+Resolves all self intersections, t-junctions, and removes duplicate vertices/edges from a [planar straight line graph](https://en.wikipedia.org/wiki/Planar_straight-line_graph) using [iterated snap rounding](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.23.220).
 
 # [Demo](https://mikolalysenko.github.io/clean-pslg)
 
