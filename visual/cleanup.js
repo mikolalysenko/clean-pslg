@@ -21,22 +21,8 @@ optionDiv.style.top = '5px'
 optionDiv.style['z-index'] = '10'
 document.body.appendChild(optionDiv)
 
-var points      = [
-  [ 0.25, 0.5  ],
-  [ 0.75, 0.5  ],
-  [ 0.5,  0.25 ],
-  [ 0.5,  0.75 ],
-  [ 0.25, 0.25 ],
-  [ 0.75, 0.75 ],
-  [ 0.25, 0.75 ],
-  [ 0.75, 0.25 ]
-]
-var edges       = [
-  [0, 1],
-  [2, 3],
-  [4, 5],
-  [6, 7]
-]
+var points      = []
+var edges       = []
 var cleanPoints = []
 var cleanEdges  = []
 
@@ -44,6 +30,13 @@ function dataChanged() {
   cleanPoints = points.map(function(p) { return [p[0], p[1]] })
   cleanEdges = edges.map(function(e) { return [e[0], e[1]] })
   cleanupPSLG(cleanPoints, cleanEdges)
+}
+
+for(var i=0; i<10; ++i) {
+  var x = Math.random() * 0.8 - 0.4
+  var y = Math.random() * 0.8 - 0.4
+  points.push([0.5+x,0.5+y], [0.5-x,0.5-y])
+  edges.push([2*i, 2*i+1])
 }
 
 dataChanged()
@@ -60,7 +53,7 @@ resetP.appendChild(resetButton)
 optionDiv.appendChild(resetP)
 
 var description = document.createElement('p')
-description.innerHTML = 'click to add/remove points<br>drag to add edges<br><a href="https://github.com/mikolalysenko/cleanup-pslg">Project page</a>'
+description.innerHTML = 'click to add/remove points<br>drag to add edges<br><a href="https://github.com/mikolalysenko/clean-pslg">Project page</a>'
 optionDiv.appendChild(description)
 
 function edgeDistance(a, b, c) {

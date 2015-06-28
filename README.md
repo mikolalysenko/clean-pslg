@@ -10,6 +10,8 @@ Click on the following link to try out `clean-pslg` in your browser:
 
 [<img src="img/demo.png">](https://mikolalysenko.github.io/clean-pslg)
 
+* [Demo link](https://mikolalysenko.github.io/clean-pslg)
+
 # Example
 
 This module really only does one thing, which is clean up planar straight line graphs.  You invoke it by passing it an array of points and an array of edges like so:
@@ -50,6 +52,8 @@ console.log('edges = \n', edges)
 
 #### Output
 
+The program will output the following text:
+
 ```
 removed degeneracies from graph
 points =
@@ -73,6 +77,10 @@ edges =
   [ 7, 8 ],
   [ 8, 8 ] ]
 ```
+
+Visually, this corresponds to the following refinement of a planar graph:
+
+<img src="img/example.png">
 
 # Install
 
