@@ -348,9 +348,11 @@ function cleanPSLG(points, edges, colors) {
   //Strip color tags
   if(!!colors && modified) {
     prevEdges.length = 0
+    colors.length = 0
     for(var i=0; i<edges.length; ++i) {
       var e = edges[i]
       prevEdges.push([e[0], e[1]])
+      colors.push(e[2])
     }
   }
 
