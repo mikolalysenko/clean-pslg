@@ -4,7 +4,6 @@ module.exports = cleanPSLG
 
 var UnionFind = require('union-find')
 var boxIntersect = require('box-intersect')
-var uniq = require('uniq')
 var compareCell = require('compare-cell')
 var segseg = require('robust-segment-intersect')
 var rat = require('big-rat')
@@ -207,7 +206,7 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
       labels[i] = ptr
       floatPoints[ptr++] = floatPoints[i]
     } else {
-      //Clear no-dupes flag
+      //Clear no-dupes flag, zero out label
       noDupes = false
       labels[i] = -1
     }
@@ -219,7 +218,7 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
     return null
   }
 
-  //Fix up missing labels
+  //Do a second pass to fix up missing labels
   for(var i=0; i<numPoints; ++i) {
     if(labels[i] < 0) {
       labels[i] = labels[uf.find(i)]
@@ -230,14 +229,41 @@ function dedupPoints(floatPoints, ratPoints, floatBounds) {
   return labels
 }
 
+function compareLex(a,b) { return (a[0]-b[0]) || (a[1]-b[1]) }
+
 //Remove duplicate edge labels
 function dedupEdges(edges, labels) {
-  for(var i=0; i<edges.length; ++i) {
-    var e = edges[i]
-    e[0] = labels[e[0]]
-    e[1] = labels[e[1]]
+  if(edges.length === 0) {
+    return
   }
-  uniq(edges, compareCell)
+  if(labels) {
+    for(var i=0; i<edges.length; ++i) {
+      var e = edges[i]
+      var a = labels[e[0]]
+      var b = labels[e[1]]
+      e[0] = Math.min(a, b)
+      e[1] = Math.max(a, b)
+    }
+  } else {
+    for(var i=0; i<edges.length; ++i) {
+      var e = edges[i]
+      var a = e[0]
+      var b = e[1]
+      e[0] = Math.min(a, b)
+      e[1] = Math.max(a, b)
+    }
+  }
+  edges.sort(compareLex)
+  var ptr = 1
+  for(var i=1; i<edges.length; ++i) {
+    var prev = edges[i-1]
+    var next = edges[i]
+    if(next[0] === prev[0] && next[1] === prev[1]) {
+      continue
+    }
+    edges[ptr++] = next
+  }
+  edges.length = ptr
 }
 
 //Repeat until convergence
@@ -257,13 +283,13 @@ function snapRound(points, edges) {
   // 4. dedupe verts
   var labels     = dedupPoints(points, ratPoints, vertBounds)
 
-  // 5. check termination
-  if(!labels) {
-    return crossings.length > 0 || tjunctions.length > 0
-  }
-
   // 6. dedupe edges
   dedupEdges(edges, labels)
+
+  // 5. check termination
+  if(!labels) {
+    return (crossings.length > 0 || tjunctions.length > 0)
+  }
 
   // More iterations necessary
   return true

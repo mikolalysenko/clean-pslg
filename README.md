@@ -85,7 +85,7 @@ Visually, this corresponds to the following refinement of a planar graph:
 # Install
 
 ```
-npm i cleanup-pslg
+npm i clean-pslg
 ```
 
 # API

@@ -31,8 +31,8 @@ function checkGraph(tape, points, edges) {
     var b = points[e[1]]
     for(var j=0; j<i; ++j) {
       var f = edges[j]
-      var c = edges[f[0]]
-      var d = edges[f[1]]
+      var c = points[f[0]]
+      var d = points[f[1]]
       if(a === c || a === d ||
          b === c || b === d) {
            continue
