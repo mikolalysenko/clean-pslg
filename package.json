@@ -8,11 +8,10 @@
     "test": "test"
   },
   "dependencies": {
-    "big-rat": "^1.0.1",
+    "big-rat": "^1.0.3",
     "box-intersect": "^1.0.1",
-    "compare-cell": "^1.0.0",
     "nextafter": "^1.0.0",
-    "rat-vec": "^1.1.0",
+    "rat-vec": "^1.1.1",
     "robust-segment-intersect": "^1.0.1",
     "union-find": "^1.0.2",
     "uniq": "^1.0.1"
