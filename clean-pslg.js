@@ -98,10 +98,12 @@ function cutEdges (floatPoints, edges, crossings, junctions, useColor) {
   var i, e
 
   // Convert crossings into tjunctions by constructing rational points
-  var ratPoints = floatPoints.map((p) => [
-    rat(p[0]),
-    rat(p[1])
-  ])
+  var ratPoints = floatPoints.map(function(p) {
+      return [
+          rat(p[0]),
+          rat(p[1])
+      ]
+  })
   for (i = 0; i < crossings.length; ++i) {
     var crossing = crossings[i]
     e = crossing[0]
